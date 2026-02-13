@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Biblioteca - Web</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="login-script.js"></script>
+
+</head>
+<body>
+<script>
+  // ESSENCIAL: Se o login-script.js não tiver definido a sessão (ou houver falha), redireciona.
+  if (!window.USER_SESSION) {
+    window.location.href = 'login.html';
+  }
+</script>
+
+<div class="app-container">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="library-icon">📚</div>
+      <h2>Biblioteca Web</h2>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-item active" data-tab="dashboard">
+        <div class="nav-icon">📊</div>
+        <span>Dashboard</span>
+      </li>
+      <li class="nav-item" data-tab="books">
+        <div class="nav-icon">📖</div>
+        <span>Livros</span>
+      </li>
+      <li class="nav-item" data-tab="users">
+        <div class="nav-icon">👥</div>
+        <span>Usuários</span>
+      </li>
+      <li class="nav-item" data-tab="loans">
+        <div class="nav-icon">🔖</div>
+        <span>Empréstimos</span>
+      </li>
+      <li class="nav-item" data-tab="reports">
+        <div class="nav-icon">📈</div>
+        <span>Relatórios</span>
+      </li>
+      <li class="nav-item" data-tab="settings">
+        <div class="nav-icon">⚙️</div>
+        <span>Configurações</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="header">
+      <h1 id="section-title">Dashboard</h1>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <span id="userNameDisplay">Administrador</span>
+        <button class="btn btn-danger" id="logoutBtn">
+          <span>🚪</span>
+          Sair
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-content active" id="dashboard">
+      <div class="dashboard-cards">
+        <div class="card fade-in"><div class="card-header"><span class="card-label">Livros Cadastrados</span><span class="card-icon">📚</span></div><div class="card-value" id="booksCount">0</div><div class="card-label">Total no sistema</div></div>
+        <div class="card fade-in"><div class="card-header"><span class="card-label">Empréstimos Ativos</span><span class="card-icon">🔖</span></div><div class="card-value" id="loansCount">0</div><div class="card-label">Em andamento</div></div>
+        <div class="card fade-in"><div class="card-header"><span class="card-label">Usuários Cadastrados</span><span class="card-icon">👥</span></div><div class="card-value" id="usersCount">0</div><div class="card-label">Alunos e funcionários</div></div>
+        <div class="card fade-in"><div class="card-header"><span class="card-label">Devoluções Pendentes</span><span class="card-icon">⏱️</span></div><div class="card-value" id="pendingReturns">0</div><div class="card-label">Com atraso</div></div>
+      </div>
+
+      <div class="table-container fade-in">
+        <div class="table-header">
+          <h2>Empréstimos Recentes</h2>
+          <button class="btn btn-primary" id="newLoanBtn"><span>➕</span>Novo Empréstimo</button>
+        </div>
+        <table>
+          <thead><tr><th>ID</th><th>Usuário</th><th>Livro</th><th>Data Empréstimo</th><th>Data Devolução</th><th>Status</th></tr></thead>
+          <tbody id="loanTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="books">
+      <div class="form-container fade-in"><h2>Cadastrar Novo Livro</h2><form id="bookForm"><div class="form-grid">
+        <div class="form-group"><label class="form-label">Título</label><input type="text" class="form-control" name="title" placeholder="Digite o título do livro" required></div>
+        <div class="form-group"><label class="form-label">Autor</label><input type="text" class="form-control" name="author" placeholder="Digite o nome do autor" required></div>
+        <div class="form-group"><label class="form-label">Editora</label><input type="text" class="form-control" name="publisher" placeholder="Digite a editora"></div>
+        <div class="form-group"><label class="form-label">Ano de Publicação</label><input type="number" class="form-control" name="year" placeholder="Digite o ano"></div>
+        <div class="form-group"><label class="form-label">ISBN</label><input type="text" class="form-control" name="isbn" placeholder="Digite o ISBN"></div>
+        <div class="form-group"><label class="form-label">Categoria</label><select class="form-control" name="category"><option value="">Selecione uma categoria</option><option value="literatura">Literatura</option><option value="ciencia">Ciência</option><option value="tecnologia">Tecnologia</option><option value="historia">História</option><option value="ficcao">Ficção</option><option value="nao-ficcao">Não Ficção</option><option value="biografia">Biografia</option><option value="poesia">Poesia</option><option value="autoajuda">Autoajuda</option><option value="infantil">Infantil</option></select></div>
+        <div class="form-group"><label class="form-label">Quantidade</label><input type="number" class="form-control" name="quantity" placeholder="Digite a quantidade" required></div>
+      </div><div class="form-actions"><button type="submit" class="btn btn-primary">Salvar</button><button type="reset" class="btn btn-danger">Cancelar</button></div></form></div>
+
+      <div class="table-container fade-in" style="margin-top: 30px;">
+        <div class="table-header">
+          <h2>Livros Cadastrados</h2>
+          <div class="search-box-inline"><input type="text" class="search-input" id="bookSearchInput" placeholder="Pesquisar livro por título/autor..."></div>
+        </div>
+        <table>
+          <thead><tr><th>ID</th><th>Título</th><th>Autor</th><th>Categoria</th><th>Ano</th><th>Qtd. Total</th><th>Disponível</th><th>Ações</th></tr></thead>
+          <tbody id="booksTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="users">
+      <div class="form-container fade-in" id="userFormContainer">
+        <h2>Cadastrar Novo Usuário</h2>
+        <form id="userForm"><div class="form-grid">
+          <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-control" name="name" placeholder="Digite o nome" required></div>
+          <div class="form-group"><label class="form-label">Ano</label><input type="number" class="form-control" name="year" placeholder="Digite o ano" required></div>
+          <div class="form-group"><label class="form-label">Turma</label><input type="text" class="form-control" name="class" placeholder="Digite a turma" required></div>
+          <div class="form-group"><label class="form-label">Curso</label><select class="form-control" name="course" required><option value="">Selecione um curso</option><option value="redes">Redes</option><option value="desenvolvimento">Desenvolvimento</option><option value="zootecnia">Zootecnia</option><option value="enfermagem">Enfermagem</option></select></div>
+          <div class="form-group" id="roleGroup"><label class="form-label">Papel (Role)</label><select class="form-control" name="role" required><option value="common">Comum (Aluno/Funcionário)</option><option value="admin">Administrador (Máx. 1)</option></select></div>
+        </div><div class="form-actions"><button type="submit" class="btn btn-primary">Salvar</button><button type="reset" class="btn btn-danger">Cancelar</button></div></form></div>
+
+      <div class="table-container fade-in" style="margin-top: 30px;">
+        <div class="table-header">
+          <h2>Usuários Cadastrados</h2>
+          <div class="search-box-inline"><input type="text" class="search-input" id="userSearchInput" placeholder="Pesquisar usuário por nome/curso..."></div>
+        </div>
+        <table>
+          <thead><tr><th>ID</th><th>Nome</th><th>Email</th><th>Curso</th><th>Papel</th><th>Ações</th></tr></thead>
+          <tbody id="usersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="loans">
+      <div class="table-container fade-in">
+        <div class="table-header">
+          <h2>Todos os Empréstimos</h2>
+          <button class="btn btn-primary" id="newLoanTabBtn"><span>➕</span>Novo Empréstimo</button>
+        </div>
+        <table>
+          <thead><tr><th>ID</th><th>Usuário</th><th>Livro</th><th>Data Empréstimo</th><th>Data Devolução Prevista</th><th>Status</th><th>Multa</th><th>Ações</th></tr></thead>
+          <tbody id="activeLoanTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="reports">
+      <div class="form-container fade-in" style="margin-bottom: 20px;">
+        <h2>Filtro de Devoluções</h2>
+        <form id="reportFilterForm">
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr 150px;">
+            <div class="form-group"><label class="form-label">Data Inicial (Devolução)</label><input type="date" class="form-control" name="start_date" id="reportStartDate"></div>
+            <div class="form-group"><label class="form-label">Data Final (Devolução)</label><input type="date" class="form-control" name="end_date" id="reportEndDate"></div>
+            <div class="form-group" style="align-self: flex-end;"><button type="submit" class="btn btn-primary" style="width: 100%;">Filtrar</button></div>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-container fade-in">
+        <h2>Relatório: Livros Emprestados e Devolvidos</h2>
+        <table>
+          <thead><tr><th>ID Empréstimo</th><th>Usuário</th><th>Livro</th><th>Data Empréstimo</th><th>Data Devolução</th></tr></thead>
+          <tbody id="returnedReportsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="settings">
+      <div class="form-container fade-in">
+        <h2>Configurações do Sistema</h2>
+        <form id="settingsForm">
+          <div class="form-group"><label class="form-label">Dias para Devolução (dias)</label><input type="number" class="form-control" id="daysForReturn" name="days_for_return" min="1" required></div>
+          <div class="form-group"><label class="form-label">Multa por Atraso (R$ por dia)</label><input type="number" class="form-control" id="finePerDay" name="fine_per_day" step="0.01" min="0" required></div>
+          <div class="form-group"><label class="form-label">Notificar dias antes do vencimento (dias)</label><input type="number" class="form-control" id="notificationDays" name="notification_days" min="0" required></div>
+          <div class="form-actions"><button type="submit" class="btn btn-primary">Salvar Configurações</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loanModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-header">
+      <h2>Novo Empréstimo</h2>
+      <button class="modal-close" id="closeModal">&times;</button>
+    </div>
+    <form id="loanForm">
+
+      <div class="form-group">
+        <label class="form-label">Buscar Usuário por Nome</label>
+        <input type="text" class="form-control" id="userNameSearch" placeholder="Digite o nome do usuário" required>
+        <div class="search-results-mini" id="userLoanSearchResults"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ID do Usuário Selecionado</label>
+        <input type="text" class="form-control" id="loanUserId" placeholder="ID será preenchido automaticamente" readonly required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ID do Livro</label>
+        <input type="text" class="form-control" id="loanBookId" placeholder="Digite o ID do livro" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Data de Devolução Prevista (Opcional)</label>
+        <input type="date" class="form-control" id="loanReturnDate">
+      </div>
+
+      <div class="form-actions"><button type="submit" class="btn btn-success">Registrar Empréstimo</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="editModalTitle">Editar Registro</h2>
+      <button class="modal-close" id="closeEditModal">&times;</button>
+    </div>
+    <form id="editForm">
+      <input type="hidden" id="editId" name="id">
+      <div id="editFieldsContainer"></div>
+      <div class="form-actions" style="margin-top: 20px;"><button type="submit" class="btn btn-primary">Salvar Alterações</button></div>
+    </form>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: biblioteca-web-api
+    runtime: node
+    rootDir: .idea/projeto/backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
